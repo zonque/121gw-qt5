@@ -114,6 +114,15 @@ void DisplayDigit::setCharacter(char chr)
         b->setVisible(false);
         c->setVisible(false);
         break;
+    case 'c':
+        a->setVisible(false);
+        b->setVisible(false);
+        c->setVisible(false);
+        e->setVisible(false);
+        break;
+    case ' ':
+        setVisible(false);
+        break;
     }
 }
 
@@ -137,26 +146,28 @@ Display::Display(QWidget *parent) : QGraphicsView(parent)
     auxDisplay = new DisplayDigitGroup(scene, renderer, "aux",
                                         new DisplaySegment(renderer, "aux.negative"));
 
-    iconItems[Icon::Min]     = new DisplaySegment(renderer, "icon.min");
-    iconItems[Icon::Max]     = new DisplaySegment(renderer, "icon.max");
-    iconItems[Icon::Avg]     = new DisplaySegment(renderer, "icon.avg");
-    iconItems[Icon::LowZ]    = new DisplaySegment(renderer, "icon.lowz");
-    iconItems[Icon::AC]      = new DisplaySegment(renderer, "icon.ac");
-    iconItems[Icon::Diode]   = new DisplaySegment(renderer, "icon.diode");
-    iconItems[Icon::Beep]    = new DisplaySegment(renderer, "icon.beep");
-    iconItems[Icon::LowPass] = new DisplaySegment(renderer, "icon.lowpass");
-    iconItems[Icon::BT]      = new DisplaySegment(renderer, "icon.bt");
-    iconItems[Icon::DC]      = new DisplaySegment(renderer, "icon.dc");
-    iconItems[Icon::Auto]    = new DisplaySegment(renderer, "icon.auto");
-    iconItems[Icon::DC_AC]   = new DisplaySegment(renderer, "icon.dc_ac");
-    iconItems[Icon::Test]    = new DisplaySegment(renderer, "icon.test");
-    iconItems[Icon::Mem]     = new DisplaySegment(renderer, "icon.mem");
-    iconItems[Icon::AMinus]  = new DisplaySegment(renderer, "icon.a-");
-    iconItems[Icon::Hold]    = new DisplaySegment(renderer, "icon.hold");
-    iconItems[Icon::OneMs]   = new DisplaySegment(renderer, "icon.1ms");
-    iconItems[Icon::Battery] = new DisplaySegment(renderer, "icon.battery");
-    iconItems[Icon::Apo]     = new DisplaySegment(renderer, "icon.apo");
-    iconItems[Icon::Flash]   = new DisplaySegment(renderer, "icon.flash");
+    iconItems[Icon::Min]          = new DisplaySegment(renderer, "icon.min");
+    iconItems[Icon::Max]          = new DisplaySegment(renderer, "icon.max");
+    iconItems[Icon::Avg]          = new DisplaySegment(renderer, "icon.avg");
+    iconItems[Icon::LowZ]         = new DisplaySegment(renderer, "icon.lowz");
+    iconItems[Icon::AC]           = new DisplaySegment(renderer, "icon.ac");
+    iconItems[Icon::Diode]        = new DisplaySegment(renderer, "icon.diode");
+    iconItems[Icon::Beep]         = new DisplaySegment(renderer, "icon.beep");
+    iconItems[Icon::LowPass]      = new DisplaySegment(renderer, "icon.lowpass");
+    iconItems[Icon::BT]           = new DisplaySegment(renderer, "icon.bt");
+    iconItems[Icon::DC]           = new DisplaySegment(renderer, "icon.dc");
+    iconItems[Icon::Auto]         = new DisplaySegment(renderer, "icon.auto");
+    iconItems[Icon::MainAC]       = new DisplaySegment(renderer, "icon.main.ac");
+    iconItems[Icon::MainDC]       = new DisplaySegment(renderer, "icon.main.dc");
+    iconItems[Icon::MainDCPlusAC] = new DisplaySegment(renderer, "icon.main.dc_ac");
+    iconItems[Icon::Test]         = new DisplaySegment(renderer, "icon.test");
+    iconItems[Icon::Mem]          = new DisplaySegment(renderer, "icon.mem");
+    iconItems[Icon::AMinus]       = new DisplaySegment(renderer, "icon.a-");
+    iconItems[Icon::Hold]         = new DisplaySegment(renderer, "icon.hold");
+    iconItems[Icon::OneMs]        = new DisplaySegment(renderer, "icon.1ms");
+    iconItems[Icon::Battery]      = new DisplaySegment(renderer, "icon.battery");
+    iconItems[Icon::Apo]          = new DisplaySegment(renderer, "icon.apo");
+    iconItems[Icon::Flash]        = new DisplaySegment(renderer, "icon.flash");
 
     for (auto key : iconItems.keys()) {
         DisplaySegment *segment = iconItems[key];
