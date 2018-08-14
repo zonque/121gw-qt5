@@ -183,6 +183,18 @@ Display::Display(QWidget *parent) : QGraphicsView(parent)
     scale = new DisplaySegment(renderer, "scale");
     scene->addItem(scale);
 
+    scale_500 = new DisplaySegment(renderer, "scale.500");
+    scene->addItem(scale_500);
+
+    scale_1000 = new DisplaySegment(renderer, "scale.1000");
+    scene->addItem(scale_1000);
+
+    barNegative = new DisplaySegment(renderer, "bar.negative");
+    scene->addItem(barNegative);
+
+    barPositive = new DisplaySegment(renderer, "bar.positive");
+    scene->addItem(barPositive);
+
     show();
 }
 
@@ -196,10 +208,53 @@ void Display::setIcons(Icons icons)
     update();
 }
 
+void Display::setBarStatus(Display::BarStatus status)
+{
+    scale->setVisible(false);
+    scale_500->setVisible(false);
+    scale_1000->setVisible(false);
+
+    switch (status) {
+    case Off:
+        barNegative->setVisible(false);
+        barPositive->setVisible(false);
+
+        for (int i = 0; i < barItems.length(); i++)
+            barItems.at(i)->setVisible(false);
+
+        break;
+
+    case On500:
+        scale->setVisible(true);
+        scale_500->setVisible(true);
+        break;
+
+    case On1000:
+        scale->setVisible(true);
+        scale_1000->setVisible(true);
+        break;
+    }
+
+    update();
+}
+
 void Display::setBarValue(uint8_t barValue)
 {
     for (int i = 0; i < barItems.length(); i++)
         barItems.at(i)->setVisible(barValue >= i);
+
+    update();
+}
+
+void Display::setBarNegative(bool negative)
+{
+    if (negative) {
+        barNegative->setVisible(true);
+        barPositive->setVisible(false);
+    } else {
+        barNegative->setVisible(false);
+        barPositive->setVisible(true);
+    }
 
     update();
 }

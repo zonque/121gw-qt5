@@ -42,6 +42,12 @@ class Display : public QGraphicsView
 public:
     explicit Display(QWidget *parent = nullptr);
 
+    enum BarStatus {
+        Off,
+        On500,
+        On1000,
+    };
+
     enum Icon {
         Min           = 1 << 0,
         Max           = 1 << 1,
@@ -72,13 +78,16 @@ public:
     const int numIcons = 21;
 
     void setIcons(Icons icons);
+    void setBarStatus(BarStatus status);
     void setBarValue(uint8_t barValue);
+    void setBarNegative(bool negative);
 
 private:
     QSvgRenderer* renderer;
     DisplayDigitGroup *mainDisplay, *auxDisplay;
     QMap<enum Icon, DisplaySegment*> iconItems;
     QList<DisplaySegment *> barItems;
-    DisplaySegment *scale;
+    DisplaySegment *scale, *scale_500, *scale_1000;
+    DisplaySegment *barNegative, *barPositive;
 };
 

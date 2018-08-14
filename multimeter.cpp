@@ -115,7 +115,18 @@ void Multimeter::handlePacket()
 
     //...
 
-    ui->display->setBarValue(parser.getBarValue());
+    if (parser.getBarFlags() & PacketParser::BarFlag::Use) {
+        if (parser.getBarFlags() & PacketParser::BarFlag::Scale500)
+            ui->display->setBarStatus(Display::BarStatus::On500);
+
+        if (parser.getBarFlags() & PacketParser::BarFlag::Scale1000)
+            ui->display->setBarStatus(Display::BarStatus::On1000);
+
+        ui->display->setBarValue(parser.getBarValue());
+        ui->display->setBarNegative(parser.getBarFlags() & PacketParser::BarFlag::Negative);
+    } else
+        ui->display->setBarStatus(Display::BarStatus::Off);
+
 
     qInfo() << __func__ << icons;
     ui->display->setIcons(icons);

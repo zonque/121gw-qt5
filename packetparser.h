@@ -38,18 +38,31 @@ public:
         AMinus      = 1 << 19,
         Mem         = 1 << 20,
         Test        = 1 << 22,
-        Zero        = 1 << 23,
     };
     Q_DECLARE_FLAGS(Icons, Icon);
 
+    enum BarFlag {
+        Scale500    = 1 << 0,
+        Scale1000   = 1 << 1,
+        Negative    = 1 << 2,
+        Dunno       = 1 << 3,
+        Use         = 1 << 4,
+    };
+    Q_DECLARE_FLAGS(BarFlags, BarFlag);
+
     Icons getIcons() { return currentIcons; }
     uint32_t getSerialNumber() { return serialNumber; }
+
+    BarFlags getBarFlags() { return barFlags; }
     uint8_t getBarValue() { return barValue; }
 
 private:
     PacketVersion packetVersion;
     uint32_t serialNumber;
+
+    BarFlags barFlags;
     uint8_t barValue;
+
     Icons currentIcons;
 
     bool parseV2(const QByteArray &data);
