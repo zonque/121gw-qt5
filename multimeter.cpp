@@ -6,7 +6,7 @@ Multimeter::Multimeter(const QBluetoothDeviceInfo &device, QWidget *parent) :
     QMainWindow(parent),
     deviceInfo(device),
     display(this),
-    parser(this)
+    parser(PacketParser::PacketVersion2, this)
 {
     QLowEnergyController *c = new QLowEnergyController(device, this);
 

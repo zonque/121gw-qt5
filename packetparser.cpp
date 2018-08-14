@@ -1,3 +1,4 @@
+#include <QDebug>
 #include "packetparser.h"
 
 struct PacketV2
@@ -15,20 +16,28 @@ struct PacketV2
     uint8_t checksum;
 } __attribute__((packed));
 
-PacketParser::PacketParser(QObject *parent) : QObject(parent)
+PacketParser::PacketParser(PacketVersion version, QObject *parent) :
+    QObject(parent),
+  packetVersion(version)
 {
 }
 
-bool PacketParser::parse(const QByteArray &data)
+bool PacketParser::parseV2(const QByteArray &data)
 {
     const struct PacketV2 *packet;
 
     if (sizeof(*packet) != data.length())
         return false;
 
-    // FIXME: check checksum!
+     packet = (const struct PacketV2 *) data.constData();
 
-    packet = (const struct PacketV2 *) data.constData();
+    uint8_t checksum = 0xf2;
+
+    for (int i = 0; i < data.length() - 1; i++)
+        checksum ^= data.at(i);
+
+    if (checksum != packet->checksum)
+            return false;
 
     barValue = packet->barValue;
 
@@ -38,4 +47,12 @@ bool PacketParser::parse(const QByteArray &data)
              (packet->iconStatus[2] << 16));
 
     return true;
+}
+
+bool PacketParser::parse(const QByteArray &data)
+{
+    if (packetVersion == PacketVersion2)
+        return parseV2(data);
+
+    return false;
 }

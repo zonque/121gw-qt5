@@ -6,7 +6,11 @@ class PacketParser : public QObject
 {
     Q_OBJECT
 public:
-    explicit PacketParser(QObject *parent = nullptr);
+    enum PacketVersion {
+        PacketVersion2,
+    };
+
+    explicit PacketParser(PacketVersion version, QObject *parent = nullptr);
     bool parse(const QByteArray &data);
 
     enum Icon {
@@ -43,7 +47,10 @@ public:
     uint8_t getBarValue() { return barValue; }
 
 private:
+    PacketVersion packetVersion;
     uint32_t serialNumber;
     uint8_t barValue;
     Icons currentIcons;
+
+    bool parseV2(const QByteArray &data);
 };
