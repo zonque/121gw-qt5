@@ -27,6 +27,5 @@ private slots:
 private:
     const QBluetoothDeviceInfo deviceInfo;
     Ui::Multimeter *ui;
-    Display display;
     PacketParser parser;
 };

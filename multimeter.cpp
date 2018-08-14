@@ -2,12 +2,16 @@
 #include <QLowEnergyController>
 #include <QBluetoothUuid>
 
+#include "ui_multimeter.h"
+
 Multimeter::Multimeter(const QBluetoothDeviceInfo &device, QWidget *parent) :
     QMainWindow(parent),
     deviceInfo(device),
-    display(this),
-    parser(PacketParser::PacketVersion2, this)
+    parser(PacketParser::PacketVersion2, this),
+    ui(new Ui::Multimeter)
 {
+    ui->setupUi(this);
+
     QLowEnergyController *c = new QLowEnergyController(device, this);
 
     QObject::connect(c,&QLowEnergyController::connected, [this, c]() {
@@ -41,16 +45,12 @@ Multimeter::Multimeter(const QBluetoothDeviceInfo &device, QWidget *parent) :
 
     c->connectToDevice();
 
-    setCentralWidget(&display);
-
     setWindowTitle(device.name() + " (" + device.address().toString() + ")");
-
-    //ui->setupUi(this);
 }
 
 Multimeter::~Multimeter()
 {
-    //delete ui;
+    delete ui;
 }
 
 void Multimeter::updateDisplay()
@@ -91,9 +91,8 @@ void Multimeter::updateDisplay()
 
     //...
 
-    display.setBarValue(parser.getBarValue());
+    ui->display->setBarValue(parser.getBarValue());
 
     qInfo() << __func__ << icons;
-
-    display.setIcons(icons);
+    ui->display->setIcons(icons);
 }

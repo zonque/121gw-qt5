@@ -72,8 +72,6 @@ public:
     void setIcons(Icons icons);
     void setBarValue(uint8_t barValue);
 
-    virtual QSize sizeHint() const override;
-
 private:
     QSvgRenderer* renderer;
     DisplayDigitGroup *mainDisplay, *auxDisplay;

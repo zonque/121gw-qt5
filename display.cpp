@@ -8,8 +8,8 @@ DisplaySegment::DisplaySegment(QSvgRenderer *renderer, QString elementId)
 {
     setSharedRenderer(renderer);
     setElementId(elementId);
-    setPos(renderer->boundsOnElement(elementId).topLeft() * 4.0);
-    setScale(4.0);
+    setPos(renderer->boundsOnElement(elementId).topLeft() * 2.0);
+    setScale(2.0);
     setVisible(false);
 }
 
@@ -191,9 +191,4 @@ void Display::setBarValue(uint8_t barValue)
         barItems.at(i)->setVisible(barValue >= i);
 
     update();
-}
-
-QSize Display::sizeHint() const
-{
-    return renderer->defaultSize();
 }
