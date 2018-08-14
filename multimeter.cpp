@@ -1,14 +1,16 @@
 #include "multimeter.h"
 #include <QLowEnergyController>
 #include <QBluetoothUuid>
+#include <QFileDialog>
 
 #include "ui_multimeter.h"
 
 Multimeter::Multimeter(const QBluetoothDeviceInfo &device, QWidget *parent) :
     QMainWindow(parent),
     deviceInfo(device),
+    ui(new Ui::Multimeter),
     parser(PacketParser::PacketVersion2, this),
-    ui(new Ui::Multimeter)
+    valueModel()
 {
     ui->setupUi(this);
 
@@ -27,12 +29,16 @@ Multimeter::Multimeter(const QBluetoothDeviceInfo &device, QWidget *parent) :
             Q_UNUSED(characteristic);
 
             if (parser.parse(newValue))
-                updateDisplay();
+                handlePacket();
         });
 
         QObject::connect(s, &QLowEnergyService::stateChanged, [this, s](QLowEnergyService::ServiceState newState) {
             if (newState == QLowEnergyService::ServiceDiscovered) {
                 foreach (const QLowEnergyCharacteristic characteristic, s->characteristics()) {
+                    // Look for the ClientCharacteristicConfiguration descriptor in all characteristics, and
+                    // send the magic 0x0100 value to each of them. This enables the asynchronous
+                    // characteristic updates.
+
                     QLowEnergyDescriptor m_notificationDesc = characteristic.descriptor(QBluetoothUuid::ClientCharacteristicConfiguration);
                     if (m_notificationDesc.isValid())
                         s->writeDescriptor(m_notificationDesc, QByteArray::fromHex("0100"));
@@ -45,6 +51,20 @@ Multimeter::Multimeter(const QBluetoothDeviceInfo &device, QWidget *parent) :
 
     c->connectToDevice();
 
+    ui->tableView->horizontalHeader()->setStretchLastSection(true);
+    ui->tableView->setModel(&valueModel);
+
+    QObject::connect(ui->historyClearButton, &QPushButton::clicked, [this]() {
+        ui->tableView->scrollToTop();
+        valueModel.clear();
+    });
+
+    QObject::connect(ui->historySaveButton, &QPushButton::clicked, [this]() {
+        QString fileName = QFileDialog::getSaveFileName(this,
+            "Save values as CSV", NULL, "CSV (*.csv *.txt)");
+        // ...
+    });
+
     setWindowTitle(device.name() + " (" + device.address().toString() + ")");
 }
 
@@ -53,9 +73,13 @@ Multimeter::~Multimeter()
     delete ui;
 }
 
-void Multimeter::updateDisplay()
+void Multimeter::handlePacket()
 {
     Display::Icons icons = 0;
+
+    // FIXME
+    valueModel.addValue(MultimeterValue(QTime::currentTime(), 0.1, 0.2));
+    ui->tableView->scrollToBottom();
 
     if (parser.getIcons() & PacketParser::Icon::Battery)
         icons |= Display::Icon::Battery;
