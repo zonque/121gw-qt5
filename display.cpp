@@ -205,7 +205,7 @@ Display::Display(QWidget *parent) : QGraphicsView(parent)
     }
 
     unitIconItems[UnitIcon::subdB]      = new DisplaySegment(renderer, "unit.sub.db");
-    unitIconItems[UnitIcon::subm]       = new DisplaySegment(renderer, "unit.sub.milli");
+    unitIconItems[UnitIcon::subMilli]       = new DisplaySegment(renderer, "unit.sub.milli");
     unitIconItems[UnitIcon::subA]       = new DisplaySegment(renderer, "unit.sub.a");
     unitIconItems[UnitIcon::subPercent] = new DisplaySegment(renderer, "unit.sub.percent");
     unitIconItems[UnitIcon::subn]       = new DisplaySegment(renderer, "unit.sub.nano");
@@ -218,8 +218,8 @@ Display::Display(QWidget *parent) : QGraphicsView(parent)
     unitIconItems[UnitIcon::mainCelcius]    = new DisplaySegment(renderer, "unit.main.celcius");
     unitIconItems[UnitIcon::mainFahrenheit] = new DisplaySegment(renderer, "unit.main.fahrenheit");
     unitIconItems[UnitIcon::mainMilli]      = new DisplaySegment(renderer, "unit.main.milli");
-    unitIconItems[UnitIcon::mainV]          = new DisplaySegment(renderer, "unit.main.a1");
-    unitIconItems[UnitIcon::mainA1]         = new DisplaySegment(renderer, "unit.main.fahrenheit");
+    unitIconItems[UnitIcon::mainV]          = new DisplaySegment(renderer, "unit.main.v");
+    unitIconItems[UnitIcon::mainA1]         = new DisplaySegment(renderer, "unit.main.a1");
     unitIconItems[UnitIcon::mainMicro]      = new DisplaySegment(renderer, "unit.main.micro");
     unitIconItems[UnitIcon::mainNano]       = new DisplaySegment(renderer, "unit.main.nano");
     unitIconItems[UnitIcon::mainF]          = new DisplaySegment(renderer, "unit.main.f");

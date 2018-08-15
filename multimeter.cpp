@@ -82,6 +82,34 @@ void Multimeter::handlePacket()
 
     double mainValue, subValue;
 
+    switch (parser.getMainMode()) {
+    case PacketParser::Mode::ModeLowZ:
+        icons |= Display::Icon::LowZ;
+        unitIcons |= Display::UnitIcon::mainV;
+        break;
+    case PacketParser::Mode::ModeDCmV:
+    case PacketParser::Mode::ModeACmV:
+        unitIcons |= Display::UnitIcon::mainMilli;
+        // fall-through
+    case PacketParser::Mode::ModeDCV:
+    case PacketParser::Mode::ModeACV:
+        unitIcons |= Display::UnitIcon::mainV;
+    default:
+        break;
+    }
+
+    switch (parser.getSubMode()) {
+    case PacketParser::Mode::ModeDCmV:
+    case PacketParser::Mode::ModeACmV:
+        unitIcons |= Display::UnitIcon::subMilli;
+        // fall-through
+    case PacketParser::Mode::ModeDCV:
+    case PacketParser::Mode::ModeACV:
+        unitIcons |= Display::UnitIcon::subV;
+    default:
+        break;
+    }
+
     if (parser.getMainRangeFlags() & PacketParser::MainRangeFlag::OFL) {
         ui->display->setMain("OFL ", 3);
         mainValue = qInf();
@@ -172,8 +200,7 @@ void Multimeter::handlePacket()
         if (parser.getBarFlags() & PacketParser::BarFlag::Scale1000)
             ui->display->setBarStatus(Display::BarStatus::On1000);
 
-        ui->display->setBarValue(parser.getBarValue());
-        ui->display->setBarNegative(parser.getBarFlags() & PacketParser::BarFlag::BarNegative);
+        ui->display->setBarValue(parser.getBarValue(), parser.getBarFlags() & PacketParser::BarFlag::BarNegative);
     } else
         ui->display->setBarStatus(Display::BarStatus::Off);
 

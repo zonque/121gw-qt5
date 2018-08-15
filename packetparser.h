@@ -13,6 +13,46 @@ public:
     explicit PacketParser(PacketVersion version, QObject *parent = nullptr);
     bool parse(const QByteArray &data);
 
+    enum Mode {
+        ModeLowZ               = 0,
+        ModeDCV                = 1,
+        ModeACV                = 2,
+        ModeDCmV               = 3,
+        ModeACmV               = 4,
+        ModeTemp               = 5,
+        ModeHz                 = 6,
+        ModemS                 = 7,
+        ModeDuty               = 8,
+        ModeResistor           = 9,
+        ModeContinuity         = 10,
+        ModeDiode              = 11,
+        ModeCapacitor          = 12,
+        ModeACuVA              = 13,
+        ModeACmVA              = 14,
+        ModeACVA               = 15,
+        ModeACuA               = 16,
+        ModeDCuA               = 17,
+        ModeACmA               = 18,
+        ModeDCmA               = 19,
+        ModeACA                = 20,
+        ModeDCA                = 21,
+        ModeDCuVA              = 22,
+        ModeDCmVA              = 23,
+        ModeDCVA               = 24,
+        ModeSetupTempC         = 100,
+        ModeSetupTempF         = 105,
+        ModeSetupBattery       = 110,
+        ModeSetupAPO_On        = 120,
+        ModeSetupAPO_Off       = 125,
+        ModeSetupYear          = 130,
+        ModeSetupDate          = 135,
+        ModeSetupTime          = 140,
+        ModeSetupBurdenVoltage = 150,
+        ModeSetupLCD           = 160,
+        ModeSetupdBm           = 180,
+        ModeSetupInterval      = 190
+    };
+
     enum MainRangeFlag {
         Fahrenheit  = 1 << 0,
         Celcius     = 1 << 1,
@@ -25,8 +65,8 @@ public:
         Battery     = 1 << 0,
         Apo         = 1 << 1,
         Auto        = 1 << 2,
-        MainAC      = 1 << 3,
-        MainDC      = 1 << 4,
+        MainDC      = 1 << 3,
+        MainAC      = 1 << 4,
         OneMs       = 1 << 5,
         LowPass     = 1 << 6,
         IconCelcius = 1 << 7,
@@ -58,9 +98,11 @@ public:
     };
     Q_DECLARE_FLAGS(BarFlags, BarFlag);
 
-    uint16_t getMainValue() { return mainValue; }
+    Mode getMainMode() { return mainMode; }
+    uint32_t getMainValue() { return mainValue; }
     MainRangeFlags getMainRangeFlags() { return mainRangeFlags; }
 
+    Mode getSubMode() { return subMode; }
     uint16_t getSubValue() { return subValue; }
 
     Icons getIcons() { return currentIcons; }
@@ -73,10 +115,12 @@ private:
     PacketVersion packetVersion;
     uint32_t serialNumber;
 
+    Mode mainMode, subMode;
+
     BarFlags barFlags;
     uint8_t barValue;
 
-    uint16_t mainValue;
+    uint32_t mainValue;
     MainRangeFlags mainRangeFlags;
 
     uint16_t subValue;

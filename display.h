@@ -79,7 +79,7 @@ public:
 
     enum UnitIcon {
         subdB             = 1 << 0,
-        subm              = 1 << 1,
+        subMilli              = 1 << 1,
         subA              = 1 << 2,
         subPercent        = 1 << 3,
         subn              = 1 << 4,

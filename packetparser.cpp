@@ -40,9 +40,11 @@ bool PacketParser::parseV2(const QByteArray &data)
     if (checksum != packet->checksum)
             return false;
 
+    mainMode = (Mode) (packet->mainMode & 0x1f);
+    subMode = (Mode) packet->subMode;
     barValue = packet->barValue;
 
-    mainValue = qFromBigEndian(packet->mainValue);
+    mainValue = qFromBigEndian(packet->mainValue) | ((packet->mainMode >> 6) << 16);
     mainRangeFlags = (MainRangeFlags) (packet->mainRange >> 4);
 
     subValue = qFromBigEndian(packet->subValue);
