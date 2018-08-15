@@ -57,9 +57,17 @@ void DisplayDigit::setVisible(bool visible)
         dp->setVisible(visible);
 }
 
+void DisplayDigit::setDpVisible(bool visible)
+{
+    if (dp)
+        dp->setVisible(visible);
+}
+
 void DisplayDigit::setCharacter(char chr)
 {
     setVisible(true);
+    if (dp)
+        dp->setVisible(false);
 
     switch (chr) {
     case '0':
@@ -113,12 +121,13 @@ void DisplayDigit::setCharacter(char chr)
         a->setVisible(false);
         b->setVisible(false);
         c->setVisible(false);
+        g->setVisible(false);
         break;
     case 'c':
         a->setVisible(false);
         b->setVisible(false);
         c->setVisible(false);
-        e->setVisible(false);
+        f->setVisible(false);
         break;
     case ' ':
         setVisible(false);
@@ -132,6 +141,27 @@ DisplayDigitGroup::DisplayDigitGroup(QGraphicsScene *scene, QSvgRenderer *render
     scene->addItem(negativeSign);
 
     digits  << new DisplayDigit(scene, renderer, prefix + ".0");
+    digits  << new DisplayDigit(scene, renderer, prefix + ".1");
+    digits  << new DisplayDigit(scene, renderer, prefix + ".2");
+    digits  << new DisplayDigit(scene, renderer, prefix + ".3");
+    digits  << new DisplayDigit(scene, renderer, prefix + ".4");
+}
+
+void DisplayDigitGroup::setString(const QString &string)
+{
+    if (string.length() > digits.length())
+        return;
+
+    QString padded = string.rightJustified(digits.length(), ' ');
+
+    for (int i = 0; i < digits.length(); i++)
+        digits[i]->setCharacter(padded.at(padded.length() - i -1).toLatin1());
+}
+
+void DisplayDigitGroup::setDpPosition(int position)
+{
+    for (int i = 0; i < digits.length(); i++)
+        digits[i]->setDpVisible(position == i);
 }
 
 Display::Display(QWidget *parent) : QGraphicsView(parent)
@@ -143,8 +173,8 @@ Display::Display(QWidget *parent) : QGraphicsView(parent)
 
     mainDisplay = new DisplayDigitGroup(scene, renderer, "main",
                                         new DisplaySegment(renderer, "main.negative"));
-    auxDisplay = new DisplayDigitGroup(scene, renderer, "aux",
-                                        new DisplaySegment(renderer, "aux.negative"));
+    subDisplay = new DisplayDigitGroup(scene, renderer, "aux",
+                                       new DisplaySegment(renderer, "aux.negative"));
 
     iconItems[Icon::Min]          = new DisplaySegment(renderer, "icon.min");
     iconItems[Icon::Max]          = new DisplaySegment(renderer, "icon.max");
@@ -208,6 +238,18 @@ Display::Display(QWidget *parent) : QGraphicsView(parent)
 
     barPositive = new DisplaySegment(renderer, "bar.positive");
     scene->addItem(barPositive);
+}
+
+void Display::setMain(const QString &string, int dpPosition)
+{
+    mainDisplay->setString(string);
+    mainDisplay->setDpPosition(dpPosition);
+}
+
+void Display::setSub(const QString &string, int dpPosition)
+{
+    subDisplay->setString(string);
+    subDisplay->setDpPosition(dpPosition);
 }
 
 void Display::setIcons(Icons icons)

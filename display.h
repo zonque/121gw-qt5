@@ -20,6 +20,7 @@ class DisplayDigit : public QObject
 public:
     explicit DisplayDigit(QGraphicsScene *scene, QSvgRenderer *renderer, QString prefix);
     void setVisible(bool visible);
+    void setDpVisible(bool visible);
     void setCharacter(char chr);
 private:
     DisplaySegment *a, *b, *c, *d, *e, *f, *g, *dp;
@@ -30,7 +31,8 @@ class DisplayDigitGroup : public QObject
     Q_OBJECT
 public:
     explicit DisplayDigitGroup(QGraphicsScene *scene, QSvgRenderer *renderer, QString prefix, DisplaySegment *negative);
-
+    void setString(const QString &string);
+    void setDpPosition(int position);
 private:
     DisplaySegment *negativeSign;
     QList<DisplayDigit*> digits;
@@ -92,6 +94,9 @@ public:
     };
     Q_DECLARE_FLAGS(UnitIcons, UnitIcon);
 
+    void setMain(const QString &string, int dpPosition);
+    void setSub(const QString &string, int dpPosition);
+
     void setIcons(Icons icons);
     void setUnitIcons(UnitIcons icons);
     void setBarStatus(BarStatus status);
@@ -100,7 +105,7 @@ public:
 
 private:
     QSvgRenderer* renderer;
-    DisplayDigitGroup *mainDisplay, *auxDisplay;
+    DisplayDigitGroup *mainDisplay, *subDisplay;
     QMap<enum Icon, DisplaySegment*> iconItems;
     QMap<enum UnitIcon, DisplaySegment*> unitIconItems;
     QList<DisplaySegment *> barItems;

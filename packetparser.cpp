@@ -41,6 +41,8 @@ bool PacketParser::parseV2(const QByteArray &data)
 
     barValue = packet->barValue;
 
+    mainRangeFlags = (MainRangeFlags) (packet->mainRange >> 4);
+
     barFlags = (BarFlags) packet->barStatus;
 
     currentIcons = (Icons)

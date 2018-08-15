@@ -82,6 +82,18 @@ void Multimeter::handlePacket()
     valueModel.addValue(MultimeterValue(QTime::currentTime(), 0.1, 0.2));
     ui->tableView->scrollToBottom();
 
+    if (parser.getMainRangeFlags() & PacketParser::MainRangeFlag::OFL) {
+        ui->display->setMain("OFL ", 3);
+    } else {
+        ui->display->setMain("ccccc", 3);
+    }
+
+    if (parser.getMainRangeFlags() & PacketParser::MainRangeFlag::Fahrenheit)
+        unitIcons |= Display::UnitIcon::mainFahrenheit;
+
+    if (parser.getMainRangeFlags() & PacketParser::MainRangeFlag::Celcius)
+        unitIcons |= Display::UnitIcon::mainCelcius;
+
     if (parser.getIcons() & PacketParser::Icon::Battery)
         icons |= Display::Icon::Battery;
 
@@ -116,12 +128,6 @@ void Multimeter::handlePacket()
     if (parser.getIcons() & PacketParser::Icon::BT)
         icons |= Display::Icon::BT;
 
-    if (parser.getIcons() & PacketParser::Icon::Fahrenheit)
-        unitIcons |= Display::UnitIcon::mainFahrenheit;
-
-    if (parser.getIcons() & PacketParser::Icon::Celcius)
-        unitIcons |= Display::UnitIcon::mainCelcius;
-
 
     //...
     if (parser.getIcons() & PacketParser::Icon::DC)
@@ -150,7 +156,7 @@ void Multimeter::handlePacket()
             ui->display->setBarStatus(Display::BarStatus::On1000);
 
         ui->display->setBarValue(parser.getBarValue());
-        ui->display->setBarNegative(parser.getBarFlags() & PacketParser::BarFlag::Negative);
+        ui->display->setBarNegative(parser.getBarFlags() & PacketParser::BarFlag::BarNegative);
     } else
         ui->display->setBarStatus(Display::BarStatus::Off);
 

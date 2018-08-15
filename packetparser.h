@@ -13,6 +13,14 @@ public:
     explicit PacketParser(PacketVersion version, QObject *parent = nullptr);
     bool parse(const QByteArray &data);
 
+    enum MainRangeFlag {
+        Fahrenheit  = 1 << 0,
+        Celcius     = 1 << 1,
+        Negative    = 1 << 2,
+        OFL         = 1 << 3,
+    };
+    Q_DECLARE_FLAGS(MainRangeFlags, MainRangeFlag);
+
     enum Icon {
         Battery     = 1 << 0,
         Apo         = 1 << 1,
@@ -21,7 +29,7 @@ public:
         MainDC      = 1 << 4,
         OneMs       = 1 << 5,
         LowPass     = 1 << 6,
-        Celcius     = 1 << 7,
+        IconCelcius = 1 << 7,
 
         Avg         = 1 << 8,
         Max         = 1 << 9,
@@ -30,7 +38,7 @@ public:
         Rel         = 1 << 12,
         Down        = 1 << 13,
         BT          = 1 << 14,
-        Fahrenheit  = 1 << 15,
+        IconFahrenheit  = 1 << 15,
 
         DC          = 1 << 16,
         AC          = 1 << 17,
@@ -44,11 +52,13 @@ public:
     enum BarFlag {
         Scale500    = 1 << 0,
         Scale1000   = 1 << 1,
-        Negative    = 1 << 2,
+        BarNegative = 1 << 2,
         Dunno       = 1 << 3,
         Use         = 1 << 4,
     };
     Q_DECLARE_FLAGS(BarFlags, BarFlag);
+
+    MainRangeFlags getMainRangeFlags() { return mainRangeFlags; }
 
     Icons getIcons() { return currentIcons; }
     uint32_t getSerialNumber() { return serialNumber; }
@@ -63,6 +73,7 @@ private:
     BarFlags barFlags;
     uint8_t barValue;
 
+    MainRangeFlags mainRangeFlags;
     Icons currentIcons;
 
     bool parseV2(const QByteArray &data);
