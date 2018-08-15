@@ -76,6 +76,7 @@ Multimeter::~Multimeter()
 void Multimeter::handlePacket()
 {
     Display::Icons icons = 0;
+    Display::UnitIcons unitIcons = 0;
 
     // FIXME
     valueModel.addValue(MultimeterValue(QTime::currentTime(), 0.1, 0.2));
@@ -98,6 +99,8 @@ void Multimeter::handlePacket()
         icons |= Display::Icon::LowPass;
 
     //...
+    if (parser.getIcons() & PacketParser::Icon::dBm)
+        unitIcons |= Display::UnitIcon::subdB;
 
     if (parser.getIcons() & PacketParser::Icon::Avg)
         icons |= Display::Icon::Avg;
@@ -113,9 +116,33 @@ void Multimeter::handlePacket()
     if (parser.getIcons() & PacketParser::Icon::BT)
         icons |= Display::Icon::BT;
 
-    //...
+    if (parser.getIcons() & PacketParser::Icon::Fahrenheit)
+        unitIcons |= Display::UnitIcon::mainFahrenheit;
 
-    if (parser.getBarFlags() & PacketParser::BarFlag::Use) {
+    if (parser.getIcons() & PacketParser::Icon::Celcius)
+        unitIcons |= Display::UnitIcon::mainCelcius;
+
+
+    //...
+    if (parser.getIcons() & PacketParser::Icon::DC)
+        icons |= Display::Icon::DC;
+
+    if (parser.getIcons() & PacketParser::Icon::AC)
+        icons |= Display::Icon::AC;
+
+    if (parser.getIcons() & PacketParser::Icon::Hold)
+        icons |= Display::Icon::Hold;
+
+    if (parser.getIcons() & PacketParser::Icon::AMinus)
+        icons |= Display::Icon::AMinus;
+
+    if (parser.getIcons() & PacketParser::Icon::Mem)
+        icons |= Display::Icon::Mem;
+
+    if (parser.getIcons() & PacketParser::Icon::Test)
+        icons |= Display::Icon::Test;
+
+    if (!(parser.getBarFlags() & PacketParser::BarFlag::Use)) {
         if (parser.getBarFlags() & PacketParser::BarFlag::Scale500)
             ui->display->setBarStatus(Display::BarStatus::On500);
 
@@ -127,7 +154,8 @@ void Multimeter::handlePacket()
     } else
         ui->display->setBarStatus(Display::BarStatus::Off);
 
-
     qInfo() << __func__ << icons;
+
     ui->display->setIcons(icons);
+    ui->display->setUnitIcons(unitIcons);
 }

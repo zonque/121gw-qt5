@@ -174,6 +174,20 @@ Display::Display(QWidget *parent) : QGraphicsView(parent)
         scene->addItem(segment);
     }
 
+    unitIconItems[UnitIcon::subdB]      = new DisplaySegment(renderer, "unit.sub.db");
+    unitIconItems[UnitIcon::subm]       = new DisplaySegment(renderer, "unit.sub.m");
+    unitIconItems[UnitIcon::subA]       = new DisplaySegment(renderer, "unit.sub.a");
+    unitIconItems[UnitIcon::subPercent] = new DisplaySegment(renderer, "unit.sub.percent");
+    unitIconItems[UnitIcon::subn]       = new DisplaySegment(renderer, "unit.sub.n");
+    unitIconItems[UnitIcon::subS]       = new DisplaySegment(renderer, "unit.sub.s");
+    unitIconItems[UnitIcon::subOhm]     = new DisplaySegment(renderer, "unit.sub.ohm");
+    unitIconItems[UnitIcon::subV]       = new DisplaySegment(renderer, "unit.sub.v");
+    unitIconItems[UnitIcon::subK]       = new DisplaySegment(renderer, "unit.sub.k");
+    unitIconItems[UnitIcon::subHz]      = new DisplaySegment(renderer, "unit.sub.hz");
+
+    unitIconItems[UnitIcon::mainCelcius]    = new DisplaySegment(renderer, "unit.main.celcius");
+    unitIconItems[UnitIcon::mainFahrenheit] = new DisplaySegment(renderer, "unit.main.fahrenheit");
+
     for (int i = 0; i < 26; i++) {
         DisplaySegment *segment = new DisplaySegment(renderer, QString::asprintf("bar.%d", i));
         barItems << segment;
@@ -194,14 +208,22 @@ Display::Display(QWidget *parent) : QGraphicsView(parent)
 
     barPositive = new DisplaySegment(renderer, "bar.positive");
     scene->addItem(barPositive);
-
-    show();
 }
 
 void Display::setIcons(Icons icons)
 {
     for (auto key : iconItems.keys()) {
         DisplaySegment *segment = iconItems[key];
+        segment->setVisible(icons & key);
+    }
+
+    update();
+}
+
+void Display::setUnitIcons(UnitIcons icons)
+{
+    for (auto key : unitIconItems.keys()) {
+        DisplaySegment *segment = unitIconItems[key];
         segment->setVisible(icons & key);
     }
 

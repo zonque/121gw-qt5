@@ -75,9 +75,25 @@ public:
     };
     Q_DECLARE_FLAGS(Icons, Icon);
 
-    const int numIcons = 21;
+    enum UnitIcon {
+        subdB             = 1 << 0,
+        subm              = 1 << 1,
+        subA              = 1 << 2,
+        subPercent        = 1 << 3,
+        subn              = 1 << 4,
+        subS              = 1 << 5,
+        subOhm            = 1 << 6,
+        subV              = 1 << 7,
+        subK              = 1 << 8,
+        subHz             = 1 << 9,
+        mainCelcius       = 1 << 10,
+        mainFahrenheit    = 1 << 11,
+        mainHz            = 1 << 12,
+    };
+    Q_DECLARE_FLAGS(UnitIcons, UnitIcon);
 
     void setIcons(Icons icons);
+    void setUnitIcons(UnitIcons icons);
     void setBarStatus(BarStatus status);
     void setBarValue(uint8_t barValue);
     void setBarNegative(bool negative);
@@ -86,6 +102,7 @@ private:
     QSvgRenderer* renderer;
     DisplayDigitGroup *mainDisplay, *auxDisplay;
     QMap<enum Icon, DisplaySegment*> iconItems;
+    QMap<enum UnitIcon, DisplaySegment*> unitIconItems;
     QList<DisplaySegment *> barItems;
     DisplaySegment *scale, *scale_500, *scale_1000;
     DisplaySegment *barNegative, *barPositive;
