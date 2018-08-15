@@ -63,17 +63,17 @@ public:
         DC            = 1 << 9,
         Auto          = 1 << 10,
         MainAC        = 1 << 11,
-        MainDC        = 1 << 11,
-        MainDCPlusAC  = 1 << 11,
-        Test          = 1 << 12,
-        Mem           = 1 << 13,
-        AMinus        = 1 << 14,
-        Hold          = 1 << 15,
-        OneMs         = 1 << 16,
-        Battery       = 1 << 17,
-        Apo           = 1 << 18,
-        Flash         = 1 << 19,
-        Rel           = 1 << 20,
+        MainDC        = 1 << 12,
+        MainDCPlusAC  = 1 << 13,
+        Test          = 1 << 14,
+        Mem           = 1 << 15,
+        AMinus        = 1 << 16,
+        Hold          = 1 << 17,
+        OneMs         = 1 << 18,
+        Battery       = 1 << 19,
+        Apo           = 1 << 20,
+        Flash         = 1 << 21,
+        Rel           = 1 << 22,
     };
     Q_DECLARE_FLAGS(Icons, Icon);
 
@@ -90,7 +90,17 @@ public:
         subHz             = 1 << 9,
         mainCelcius       = 1 << 10,
         mainFahrenheit    = 1 << 11,
-        mainHz            = 1 << 12,
+        mainMilli         = 1 << 12,
+        mainV             = 1 << 13,
+        mainA1            = 1 << 14,
+        mainMicro         = 1 << 15,
+        mainNano          = 1 << 16,
+        mainF             = 1 << 17,
+        mainA2            = 1 << 18,
+        mainMega          = 1 << 19,
+        mainKilo          = 1 << 20,
+        mainOhm           = 1 << 21,
+        mainHz            = 1 << 22,
     };
     Q_DECLARE_FLAGS(UnitIcons, UnitIcon);
 
@@ -100,8 +110,7 @@ public:
     void setIcons(Icons icons);
     void setUnitIcons(UnitIcons icons);
     void setBarStatus(BarStatus status);
-    void setBarValue(uint8_t barValue);
-    void setBarNegative(bool negative);
+    void setBarValue(uint8_t barValue, bool negative);
 
 private:
     QSvgRenderer* renderer;

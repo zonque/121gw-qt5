@@ -205,18 +205,34 @@ Display::Display(QWidget *parent) : QGraphicsView(parent)
     }
 
     unitIconItems[UnitIcon::subdB]      = new DisplaySegment(renderer, "unit.sub.db");
-    unitIconItems[UnitIcon::subm]       = new DisplaySegment(renderer, "unit.sub.m");
+    unitIconItems[UnitIcon::subm]       = new DisplaySegment(renderer, "unit.sub.milli");
     unitIconItems[UnitIcon::subA]       = new DisplaySegment(renderer, "unit.sub.a");
     unitIconItems[UnitIcon::subPercent] = new DisplaySegment(renderer, "unit.sub.percent");
-    unitIconItems[UnitIcon::subn]       = new DisplaySegment(renderer, "unit.sub.n");
+    unitIconItems[UnitIcon::subn]       = new DisplaySegment(renderer, "unit.sub.nano");
     unitIconItems[UnitIcon::subS]       = new DisplaySegment(renderer, "unit.sub.s");
     unitIconItems[UnitIcon::subOhm]     = new DisplaySegment(renderer, "unit.sub.ohm");
     unitIconItems[UnitIcon::subV]       = new DisplaySegment(renderer, "unit.sub.v");
-    unitIconItems[UnitIcon::subK]       = new DisplaySegment(renderer, "unit.sub.k");
+    unitIconItems[UnitIcon::subK]       = new DisplaySegment(renderer, "unit.sub.kilo");
     unitIconItems[UnitIcon::subHz]      = new DisplaySegment(renderer, "unit.sub.hz");
 
     unitIconItems[UnitIcon::mainCelcius]    = new DisplaySegment(renderer, "unit.main.celcius");
     unitIconItems[UnitIcon::mainFahrenheit] = new DisplaySegment(renderer, "unit.main.fahrenheit");
+    unitIconItems[UnitIcon::mainMilli]      = new DisplaySegment(renderer, "unit.main.milli");
+    unitIconItems[UnitIcon::mainV]          = new DisplaySegment(renderer, "unit.main.a1");
+    unitIconItems[UnitIcon::mainA1]         = new DisplaySegment(renderer, "unit.main.fahrenheit");
+    unitIconItems[UnitIcon::mainMicro]      = new DisplaySegment(renderer, "unit.main.micro");
+    unitIconItems[UnitIcon::mainNano]       = new DisplaySegment(renderer, "unit.main.nano");
+    unitIconItems[UnitIcon::mainF]          = new DisplaySegment(renderer, "unit.main.f");
+    unitIconItems[UnitIcon::mainA2]         = new DisplaySegment(renderer, "unit.main.a2");
+    unitIconItems[UnitIcon::mainMega]       = new DisplaySegment(renderer, "unit.main.mega");
+    unitIconItems[UnitIcon::mainKilo]       = new DisplaySegment(renderer, "unit.main.kilo");
+    unitIconItems[UnitIcon::mainOhm]        = new DisplaySegment(renderer, "unit.main.ohm");
+    unitIconItems[UnitIcon::mainHz]         = new DisplaySegment(renderer, "unit.main.hz");
+
+    for (auto key : unitIconItems.keys()) {
+        DisplaySegment *segment = unitIconItems[key];
+        scene->addItem(segment);
+    }
 
     for (int i = 0; i < 26; i++) {
         DisplaySegment *segment = new DisplaySegment(renderer, QString::asprintf("bar.%d", i));
@@ -302,22 +318,19 @@ void Display::setBarStatus(Display::BarStatus status)
     update();
 }
 
-void Display::setBarValue(uint8_t barValue)
+void Display::setBarValue(uint8_t barValue, bool negative)
 {
     for (int i = 0; i < barItems.length(); i++)
         barItems.at(i)->setVisible(barValue >= i);
 
-    update();
-}
+    barNegative->setVisible(false);
+    barPositive->setVisible(false);
 
-void Display::setBarNegative(bool negative)
-{
-    if (negative) {
-        barNegative->setVisible(true);
-        barPositive->setVisible(false);
-    } else {
-        barNegative->setVisible(false);
-        barPositive->setVisible(true);
+    if (barValue) {
+        if (negative)
+            barNegative->setVisible(true);
+        else
+            barPositive->setVisible(true);
     }
 
     update();
