@@ -680,7 +680,7 @@
        inkscape:label="" />
     <g
        id="icon.main.ac"
-       inkscape:label="#g4946">
+       inkscape:label="">
       <path
          id="path4935"
          transform="matrix(0.26458333,0,0,0.26458333,24.575937,125.35773)"
@@ -693,8 +693,8 @@
          style="clip-rule:evenodd;fill-rule:evenodd;stroke-width:1.57926965" />
     </g>
     <g
-       id="main.main.dc"
-       inkscape:label="#g4942">
+       id="icon.main.dc"
+       inkscape:label="">
       <path
          id="path4931"
          transform="matrix(0.26458333,0,0,0.26458333,24.575937,125.35773)"

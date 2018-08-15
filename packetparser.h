@@ -58,7 +58,10 @@ public:
     };
     Q_DECLARE_FLAGS(BarFlags, BarFlag);
 
+    uint16_t getMainValue() { return mainValue; }
     MainRangeFlags getMainRangeFlags() { return mainRangeFlags; }
+
+    uint16_t getSubValue() { return subValue; }
 
     Icons getIcons() { return currentIcons; }
     uint32_t getSerialNumber() { return serialNumber; }
@@ -73,7 +76,11 @@ private:
     BarFlags barFlags;
     uint8_t barValue;
 
+    uint16_t mainValue;
     MainRangeFlags mainRangeFlags;
+
+    uint16_t subValue;
+
     Icons currentIcons;
 
     bool parseV2(const QByteArray &data);

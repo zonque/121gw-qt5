@@ -1,4 +1,5 @@
 #include <QDebug>
+#include <QtEndian>
 #include "packetparser.h"
 
 struct PacketV2
@@ -41,7 +42,10 @@ bool PacketParser::parseV2(const QByteArray &data)
 
     barValue = packet->barValue;
 
+    mainValue = qFromBigEndian(packet->mainValue);
     mainRangeFlags = (MainRangeFlags) (packet->mainRange >> 4);
+
+    subValue = qFromBigEndian(packet->subValue);
 
     barFlags = (BarFlags) packet->barStatus;
 

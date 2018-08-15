@@ -78,15 +78,23 @@ void Multimeter::handlePacket()
     Display::Icons icons = 0;
     Display::UnitIcons unitIcons = 0;
 
-    // FIXME
-    valueModel.addValue(MultimeterValue(QTime::currentTime(), 0.1, 0.2));
-    ui->tableView->scrollToBottom();
+    // FIXME: scaling is not implemented
+
+    double mainValue, subValue;
 
     if (parser.getMainRangeFlags() & PacketParser::MainRangeFlag::OFL) {
         ui->display->setMain("OFL ", 3);
+        mainValue = qInf();
     } else {
-        ui->display->setMain("ccccc", 3);
+        ui->display->setMain(QString::asprintf("%05d", parser.getMainValue()), 0);
+        mainValue = parser.getMainValue();
     }
+
+    ui->display->setSub(QString::asprintf("%05d", parser.getSubValue()), 0);
+    subValue = parser.getSubValue();
+
+    valueModel.addValue(MultimeterValue(QTime::currentTime(), mainValue, subValue));
+    ui->tableView->scrollToBottom();
 
     if (parser.getMainRangeFlags() & PacketParser::MainRangeFlag::Fahrenheit)
         unitIcons |= Display::UnitIcon::mainFahrenheit;
@@ -102,6 +110,15 @@ void Multimeter::handlePacket()
 
     if (parser.getIcons() & PacketParser::Icon::Auto)
         icons |= Display::Icon::Auto;
+
+    if (parser.getIcons() & PacketParser::Icon::MainDC)
+        icons |= Display::Icon::MainDC;
+
+    if (parser.getIcons() & PacketParser::Icon::MainAC) {
+        icons |= Display::Icon::MainAC;
+        if (parser.getIcons() & PacketParser::Icon::MainDC)
+            icons |= Display::Icon::MainDCPlusAC;
+    }
 
     //...
     if (parser.getIcons() & PacketParser::Icon::OneMs)
