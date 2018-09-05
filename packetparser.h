@@ -89,11 +89,16 @@ public:
     };
     Q_DECLARE_FLAGS(Icons, Icon);
 
+    enum BarScale {
+        BarScale5    = 0,
+        BarScale50   = 1,
+        BarScale500  = 2,
+        BarScale1000 = 3,
+    };
+
     enum BarFlag {
-        Scale500    = 1 << 0,
-        Scale1000   = 1 << 1,
         BarNegative = 1 << 2,
-        Dunno       = 1 << 3,
+        Lower       = 1 << 3,
         Use         = 1 << 4,
     };
     Q_DECLARE_FLAGS(BarFlags, BarFlag);
@@ -109,6 +114,7 @@ public:
     uint32_t getSerialNumber() { return serialNumber; }
 
     BarFlags getBarFlags() { return barFlags; }
+    BarScale getBarScale() { return barScale; }
     uint8_t getBarValue() { return barValue; }
 
 private:
@@ -118,6 +124,7 @@ private:
     Mode mainMode, subMode;
 
     BarFlags barFlags;
+    BarScale barScale;
     uint8_t barValue;
 
     uint32_t mainValue;

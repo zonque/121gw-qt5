@@ -50,6 +50,7 @@ public:
 
     enum BarStatus {
         Off,
+        On5,
         On50,
         On500,
         On10,

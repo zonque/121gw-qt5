@@ -50,7 +50,7 @@ bool PacketParser::parseV2(const QByteArray &data)
     subValue = qFromBigEndian(packet->subValue);
 
     barFlags = (BarFlags) packet->barStatus;
-
+    barScale = (BarScale) (packet->barStatus & 0x3);
     currentIcons = (Icons)
             ((packet->iconStatus[0]) |
              (packet->iconStatus[1] << 8) |

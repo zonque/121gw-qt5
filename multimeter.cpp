@@ -194,11 +194,20 @@ void Multimeter::handlePacket()
         icons |= Display::Icon::Test;
 
     if (!(parser.getBarFlags() & PacketParser::BarFlag::Use)) {
-        if (parser.getBarFlags() & PacketParser::BarFlag::Scale500)
+        switch (parser.getBarScale()) {
+        case PacketParser::BarScale5:
+            ui->display->setBarStatus(Display::BarStatus::On5);
+            break;
+        case PacketParser::BarScale50:
+            ui->display->setBarStatus(Display::BarStatus::On50);
+            break;
+        case PacketParser::BarScale500:
             ui->display->setBarStatus(Display::BarStatus::On500);
-
-        if (parser.getBarFlags() & PacketParser::BarFlag::Scale1000)
+            break;
+        case PacketParser::BarScale1000:
             ui->display->setBarStatus(Display::BarStatus::On1000);
+            break;
+        }
 
         ui->display->setBarValue(parser.getBarValue(), parser.getBarFlags() & PacketParser::BarFlag::BarNegative);
     } else

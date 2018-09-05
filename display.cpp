@@ -269,6 +269,7 @@ Display::Display(QWidget *parent) : QGraphicsView(parent)
         barItems << new DisplaySegment(scene, renderer, QString::asprintf("bar.%d", i));
 
     scale = new DisplaySegment(scene, renderer, "scale");
+    scale_5 = new DisplaySegment(scene, renderer, "scale.5");
     scale_50 = new DisplaySegment(scene, renderer, "scale.50");
     scale_500 = new DisplaySegment(scene, renderer, "scale.500");
     scale_10 = new DisplaySegment(scene, renderer, "scale.10");
@@ -290,7 +291,11 @@ Display::~Display()
         delete unitIconItems[key];
 
     delete scale;
+    delete scale_5;
+    delete scale_50;
     delete scale_500;
+    delete scale_10;
+    delete scale_100;
     delete scale_1000;
     delete barNegative;
     delete barPositive;
@@ -335,6 +340,7 @@ void Display::setUnitIcons(UnitIcons icons)
 void Display::setBarStatus(Display::BarStatus status)
 {
     scale->setVisible(false);
+    scale_5->setVisible(false);
     scale_50->setVisible(false);
     scale_500->setVisible(false);
     scale_10->setVisible(false);
@@ -356,6 +362,9 @@ void Display::setBarStatus(Display::BarStatus status)
         // fall-through
     case On50:
         scale_50->setVisible(true);
+        // fall-through
+    case On5:
+        scale_5->setVisible(true);
         scale->setVisible(true);
         break;
 
