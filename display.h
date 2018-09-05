@@ -23,6 +23,7 @@ public:
     void setDpVisible(bool visible);
     void setCharacter(char chr);
 private:
+    uint8_t getCharacterSegments(char chr);
     DisplaySegment *a, *b, *c, *d, *e, *f, *g, *dp;
 };
 

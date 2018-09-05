@@ -63,76 +63,112 @@ void DisplayDigit::setDpVisible(bool visible)
         dp->setVisible(visible);
 }
 
-void DisplayDigit::setCharacter(char chr)
-{
-    setVisible(true);
-    if (dp)
-        dp->setVisible(false);
+enum {
+    SEG_A = 1 << 0,
+    SEG_B = 1 << 1,
+    SEG_C = 1 << 2,
+    SEG_D = 1 << 3,
+    SEG_E = 1 << 4,
+    SEG_F = 1 << 5,
+    SEG_G = 1 << 6,
+};
 
+uint8_t DisplayDigit::getCharacterSegments(char chr)
+{
     switch (chr) {
     case '0':
     case 'O':
-        g->setVisible(false);
-        break;
+        return SEG_A | SEG_B | SEG_C | SEG_D | SEG_E | SEG_F;
     case '1':
-        a->setVisible(false);
-        d->setVisible(false);
-        e->setVisible(false);
-        f->setVisible(false);
-        g->setVisible(false);
-        break;
+        return SEG_B | SEG_C;
     case '2':
-        c->setVisible(false);
-        f->setVisible(false);
-        break;
+        return SEG_A | SEG_B | SEG_D | SEG_E | SEG_G;
     case '3':
-        e->setVisible(false);
-        f->setVisible(false);
-        break;
+        return SEG_A | SEG_B | SEG_C | SEG_D | SEG_G;
     case '4':
-        a->setVisible(false);
-        d->setVisible(false);
-        e->setVisible(false);
-        break;
+        return SEG_B | SEG_C | SEG_F | SEG_G;
     case '5':
-        b->setVisible(false);
-        e->setVisible(false);
-        break;
+    case 'S':
+        return SEG_A | SEG_C | SEG_D | SEG_F | SEG_G;
     case '6':
-        b->setVisible(false);
-        break;
+        return SEG_A | SEG_C | SEG_D | SEG_E | SEG_F | SEG_G;
     case '7':
-        d->setVisible(false);
-        e->setVisible(false);
-        f->setVisible(false);
-        g->setVisible(false);
-        break;
+        return SEG_A | SEG_B | SEG_C;
     case '8':
-        break;
+        return SEG_A | SEG_B | SEG_C | SEG_D | SEG_E | SEG_F | SEG_G;
+    case 'g':
     case '9':
-        e->setVisible(false);
-        break;
-    case 'F':
-        b->setVisible(false);
-        c->setVisible(false);
-        d->setVisible(false);
-        break;
-    case 'L':
-        a->setVisible(false);
-        b->setVisible(false);
-        c->setVisible(false);
-        g->setVisible(false);
-        break;
+        return SEG_A | SEG_B | SEG_C | SEG_D | SEG_F | SEG_G;
+    case 'A':
+        return SEG_A | SEG_B | SEG_C | SEG_E | SEG_F | SEG_G;
+    case 'b':
+        return SEG_C | SEG_D | SEG_E | SEG_F | SEG_G;
+    case 'C':
+        return SEG_A | SEG_D | SEG_E | SEG_F;
     case 'c':
-        a->setVisible(false);
-        b->setVisible(false);
-        c->setVisible(false);
-        f->setVisible(false);
-        break;
+        return SEG_D | SEG_E | SEG_G;
+    case 'd':
+        return SEG_B | SEG_C | SEG_D | SEG_E | SEG_G;
+    case 'E':
+        return SEG_A | SEG_D | SEG_E | SEG_F | SEG_G;
+    case 'F':
+        return SEG_A | SEG_E | SEG_F | SEG_G;
+    case 'h':
+        return SEG_C | SEG_E | SEG_F | SEG_G;
+    case 'i':
+        return SEG_C;
+    case 'I':
+        return SEG_B | SEG_C;
+    case 'J':
+    case 'j':
+        return SEG_B | SEG_C | SEG_D;
+    case 'L':
+        return SEG_D | SEG_E | SEG_F;
+    case 'N':
+        return SEG_A | SEG_B | SEG_C | SEG_E | SEG_F;
+    case 'n':
+        return SEG_C | SEG_E | SEG_G;
+    case 'o':
+        return SEG_C | SEG_D | SEG_E | SEG_G;
+    case 'P':
+    case 'p':
+        return SEG_A | SEG_B | SEG_E | SEG_F | SEG_G;
+    case 'r':
+        return SEG_E | SEG_G;
+    case 't':
+        return SEG_D | SEG_E | SEG_F | SEG_G;
+    case 'U':
+        return SEG_B | SEG_C | SEG_D | SEG_E | SEG_F;
+    case 'u':
+        return SEG_C | SEG_D | SEG_E;
+    case 'y':
+        return SEG_B | SEG_C | SEG_D | SEG_F | SEG_G;
+    case '-':
+        return SEG_G;
+    case '_':
+        return SEG_D;
     case ' ':
-        setVisible(false);
-        break;
+    default:
+        return 0;
     }
+
+    return 0;
+}
+
+void DisplayDigit::setCharacter(char chr)
+{
+    uint8_t segments = getCharacterSegments(chr);
+
+    a->setVisible(!!(segments & SEG_A));
+    b->setVisible(!!(segments & SEG_B));
+    c->setVisible(!!(segments & SEG_C));
+    d->setVisible(!!(segments & SEG_D));
+    e->setVisible(!!(segments & SEG_E));
+    f->setVisible(!!(segments & SEG_F));
+    g->setVisible(!!(segments & SEG_G));
+
+    if (dp)
+        dp->setVisible(false);
 }
 
 DisplayDigitGroup::DisplayDigitGroup(QGraphicsScene *scene, QSvgRenderer *renderer, QString prefix, DisplaySegment *negative)
@@ -140,11 +176,11 @@ DisplayDigitGroup::DisplayDigitGroup(QGraphicsScene *scene, QSvgRenderer *render
     negativeSign = negative;
     scene->addItem(negativeSign);
 
-    digits  << new DisplayDigit(scene, renderer, prefix + ".0");
-    digits  << new DisplayDigit(scene, renderer, prefix + ".1");
-    digits  << new DisplayDigit(scene, renderer, prefix + ".2");
-    digits  << new DisplayDigit(scene, renderer, prefix + ".3");
-    digits  << new DisplayDigit(scene, renderer, prefix + ".4");
+    digits << new DisplayDigit(scene, renderer, prefix + ".0");
+    digits << new DisplayDigit(scene, renderer, prefix + ".1");
+    digits << new DisplayDigit(scene, renderer, prefix + ".2");
+    digits << new DisplayDigit(scene, renderer, prefix + ".3");
+    digits << new DisplayDigit(scene, renderer, prefix + ".4");
 }
 
 void DisplayDigitGroup::setString(const QString &string)
