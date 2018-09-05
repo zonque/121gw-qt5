@@ -50,7 +50,10 @@ public:
 
     enum BarStatus {
         Off,
+        On50,
         On500,
+        On10,
+        On100,
         On1000,
     };
 
@@ -122,7 +125,7 @@ private:
     QMap<enum Icon, DisplaySegment*> iconItems;
     QMap<enum UnitIcon, DisplaySegment*> unitIconItems;
     QList<DisplaySegment *> barItems;
-    DisplaySegment *scale, *scale_500, *scale_1000;
+    DisplaySegment *scale, *scale_5, *scale_50, *scale_500, *scale_10, *scale_100, *scale_1000;
     DisplaySegment *barNegative, *barPositive;
 };
 

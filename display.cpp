@@ -269,7 +269,10 @@ Display::Display(QWidget *parent) : QGraphicsView(parent)
         barItems << new DisplaySegment(scene, renderer, QString::asprintf("bar.%d", i));
 
     scale = new DisplaySegment(scene, renderer, "scale");
+    scale_50 = new DisplaySegment(scene, renderer, "scale.50");
     scale_500 = new DisplaySegment(scene, renderer, "scale.500");
+    scale_10 = new DisplaySegment(scene, renderer, "scale.10");
+    scale_100 = new DisplaySegment(scene, renderer, "scale.100");
     scale_1000 = new DisplaySegment(scene, renderer, "scale.1000");
     barNegative = new DisplaySegment(scene, renderer, "bar.negative");
     barPositive = new DisplaySegment(scene, renderer, "bar.positive");
@@ -332,7 +335,10 @@ void Display::setUnitIcons(UnitIcons icons)
 void Display::setBarStatus(Display::BarStatus status)
 {
     scale->setVisible(false);
+    scale_50->setVisible(false);
     scale_500->setVisible(false);
+    scale_10->setVisible(false);
+    scale_100->setVisible(false);
     scale_1000->setVisible(false);
 
     switch (status) {
@@ -346,13 +352,22 @@ void Display::setBarStatus(Display::BarStatus status)
         break;
 
     case On500:
-        scale->setVisible(true);
         scale_500->setVisible(true);
+        // fall-through
+    case On50:
+        scale_50->setVisible(true);
+        scale->setVisible(true);
         break;
 
     case On1000:
-        scale->setVisible(true);
         scale_1000->setVisible(true);
+        // fall-through
+    case On100:
+        scale_100->setVisible(true);
+        // fall-through
+    case On10:
+        scale_10->setVisible(true);
+        scale->setVisible(true);
         break;
     }
 
