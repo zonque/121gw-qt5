@@ -7,5 +7,4 @@
 * Implement CSV export
 * Implement logic to send button codes to the device
 * Consider spltting BT code from multimeter.cpp
-* Plug memory leaks for display segments etc
 

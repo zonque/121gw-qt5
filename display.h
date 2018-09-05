@@ -11,7 +11,7 @@ class DisplaySegment : public QGraphicsSvgItem
 {
     Q_OBJECT
 public:
-    explicit DisplaySegment(QSvgRenderer *renderer, QString elementId);
+    explicit DisplaySegment(QGraphicsScene *scene, QSvgRenderer *renderer, QString elementId);
 };
 
 class DisplayDigit : public QObject
@@ -19,6 +19,7 @@ class DisplayDigit : public QObject
     Q_OBJECT
 public:
     explicit DisplayDigit(QGraphicsScene *scene, QSvgRenderer *renderer, QString prefix);
+    ~DisplayDigit();
     void setVisible(bool visible);
     void setDpVisible(bool visible);
     void setCharacter(char chr);
@@ -32,6 +33,7 @@ class DisplayDigitGroup : public QObject
     Q_OBJECT
 public:
     explicit DisplayDigitGroup(QGraphicsScene *scene, QSvgRenderer *renderer, QString prefix, DisplaySegment *negative);
+    ~DisplayDigitGroup();
     void setString(const QString &string);
     void setDpPosition(int position);
 private:
@@ -44,6 +46,7 @@ class Display : public QGraphicsView
     Q_OBJECT
 public:
     explicit Display(QWidget *parent = nullptr);
+    ~Display();
 
     enum BarStatus {
         Off,

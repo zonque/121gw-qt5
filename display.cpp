@@ -4,43 +4,44 @@
 
 #include "display.h"
 
-DisplaySegment::DisplaySegment(QSvgRenderer *renderer, QString elementId)
+DisplaySegment::DisplaySegment(QGraphicsScene *scene, QSvgRenderer *renderer, QString elementId)
 {
     setSharedRenderer(renderer);
     setElementId(elementId);
     setPos(renderer->boundsOnElement(elementId).topLeft() * 2.0);
     setScale(2.0);
     setVisible(false);
+    scene->addItem(this);
 }
 
 DisplayDigit::DisplayDigit(QGraphicsScene *scene, QSvgRenderer *renderer, QString prefix)
 {
-    a = new DisplaySegment(renderer, prefix + ".a");
-    scene->addItem(a);
+    a = new DisplaySegment(scene, renderer, prefix + ".a");
+    b = new DisplaySegment(scene, renderer, prefix + ".b");
+    c = new DisplaySegment(scene, renderer, prefix + ".c");
+    d = new DisplaySegment(scene, renderer, prefix + ".d");
+    e = new DisplaySegment(scene, renderer, prefix + ".e");
+    f = new DisplaySegment(scene, renderer, prefix + ".f");
+    g = new DisplaySegment(scene, renderer, prefix + ".g");
 
-    b = new DisplaySegment(renderer, prefix + ".b");
-    scene->addItem(b);
-
-    c = new DisplaySegment(renderer, prefix + ".c");
-    scene->addItem(c);
-
-    d = new DisplaySegment(renderer, prefix + ".d");
-    scene->addItem(d);
-
-    e = new DisplaySegment(renderer, prefix + ".e");
-    scene->addItem(e);
-
-    f = new DisplaySegment(renderer, prefix + ".f");
-    scene->addItem(f);
-
-    g = new DisplaySegment(renderer, prefix + ".g");
-    scene->addItem(g);
-
-    if (renderer->elementExists(prefix + ".dp")) {
-        dp = new DisplaySegment(renderer, prefix + ".dp");
-        scene->addItem(dp);
-    } else
+    if (renderer->elementExists(prefix + ".dp"))
+        dp = new DisplaySegment(scene, renderer, prefix + ".dp");
+    else
         dp = Q_NULLPTR;
+}
+
+DisplayDigit::~DisplayDigit()
+{
+    delete a;
+    delete b;
+    delete c;
+    delete d;
+    delete e;
+    delete f;
+    delete g;
+
+    if (dp)
+        delete dp;
 }
 
 void DisplayDigit::setVisible(bool visible)
@@ -174,13 +175,18 @@ void DisplayDigit::setCharacter(char chr)
 DisplayDigitGroup::DisplayDigitGroup(QGraphicsScene *scene, QSvgRenderer *renderer, QString prefix, DisplaySegment *negative)
 {
     negativeSign = negative;
-    scene->addItem(negativeSign);
 
     digits << new DisplayDigit(scene, renderer, prefix + ".0");
     digits << new DisplayDigit(scene, renderer, prefix + ".1");
     digits << new DisplayDigit(scene, renderer, prefix + ".2");
     digits << new DisplayDigit(scene, renderer, prefix + ".3");
     digits << new DisplayDigit(scene, renderer, prefix + ".4");
+}
+
+DisplayDigitGroup::~DisplayDigitGroup()
+{
+    while (!digits.empty())
+        delete digits.takeFirst();
 }
 
 void DisplayDigitGroup::setString(const QString &string)
@@ -208,88 +214,87 @@ Display::Display(QWidget *parent) : QGraphicsView(parent)
     renderer = new QSvgRenderer(QLatin1String(":/assets/121gw-lcd.svg"));
 
     mainDisplay = new DisplayDigitGroup(scene, renderer, "main",
-                                        new DisplaySegment(renderer, "main.negative"));
+                                        new DisplaySegment(scene, renderer, "main.negative"));
     subDisplay = new DisplayDigitGroup(scene, renderer, "aux",
-                                       new DisplaySegment(renderer, "aux.negative"));
+                                       new DisplaySegment(scene, renderer, "aux.negative"));
 
-    iconItems[Icon::Min]          = new DisplaySegment(renderer, "icon.min");
-    iconItems[Icon::Max]          = new DisplaySegment(renderer, "icon.max");
-    iconItems[Icon::Avg]          = new DisplaySegment(renderer, "icon.avg");
-    iconItems[Icon::LowZ]         = new DisplaySegment(renderer, "icon.lowz");
-    iconItems[Icon::AC]           = new DisplaySegment(renderer, "icon.ac");
-    iconItems[Icon::Diode]        = new DisplaySegment(renderer, "icon.diode");
-    iconItems[Icon::Beep]         = new DisplaySegment(renderer, "icon.beep");
-    iconItems[Icon::LowPass]      = new DisplaySegment(renderer, "icon.lowpass");
-    iconItems[Icon::BT]           = new DisplaySegment(renderer, "icon.bt");
-    iconItems[Icon::DC]           = new DisplaySegment(renderer, "icon.dc");
-    iconItems[Icon::Auto]         = new DisplaySegment(renderer, "icon.auto");
-    iconItems[Icon::MainAC]       = new DisplaySegment(renderer, "icon.main.ac");
-    iconItems[Icon::MainDC]       = new DisplaySegment(renderer, "icon.main.dc");
-    iconItems[Icon::MainDCPlusAC] = new DisplaySegment(renderer, "icon.main.dc_ac");
-    iconItems[Icon::Test]         = new DisplaySegment(renderer, "icon.test");
-    iconItems[Icon::Mem]          = new DisplaySegment(renderer, "icon.mem");
-    iconItems[Icon::AMinus]       = new DisplaySegment(renderer, "icon.a-");
-    iconItems[Icon::Hold]         = new DisplaySegment(renderer, "icon.hold");
-    iconItems[Icon::OneMs]        = new DisplaySegment(renderer, "icon.1ms");
-    iconItems[Icon::Battery]      = new DisplaySegment(renderer, "icon.battery");
-    iconItems[Icon::Apo]          = new DisplaySegment(renderer, "icon.apo");
-    iconItems[Icon::Flash]        = new DisplaySegment(renderer, "icon.flash");
+    iconItems[Icon::Min]          = new DisplaySegment(scene, renderer, "icon.min");
+    iconItems[Icon::Max]          = new DisplaySegment(scene, renderer, "icon.max");
+    iconItems[Icon::Avg]          = new DisplaySegment(scene, renderer, "icon.avg");
+    iconItems[Icon::LowZ]         = new DisplaySegment(scene, renderer, "icon.lowz");
+    iconItems[Icon::AC]           = new DisplaySegment(scene, renderer, "icon.ac");
+    iconItems[Icon::Diode]        = new DisplaySegment(scene, renderer, "icon.diode");
+    iconItems[Icon::Beep]         = new DisplaySegment(scene, renderer, "icon.beep");
+    iconItems[Icon::LowPass]      = new DisplaySegment(scene, renderer, "icon.lowpass");
+    iconItems[Icon::BT]           = new DisplaySegment(scene, renderer, "icon.bt");
+    iconItems[Icon::DC]           = new DisplaySegment(scene, renderer, "icon.dc");
+    iconItems[Icon::Auto]         = new DisplaySegment(scene, renderer, "icon.auto");
+    iconItems[Icon::MainAC]       = new DisplaySegment(scene, renderer, "icon.main.ac");
+    iconItems[Icon::MainDC]       = new DisplaySegment(scene, renderer, "icon.main.dc");
+    iconItems[Icon::MainDCPlusAC] = new DisplaySegment(scene, renderer, "icon.main.dc_ac");
+    iconItems[Icon::Test]         = new DisplaySegment(scene, renderer, "icon.test");
+    iconItems[Icon::Mem]          = new DisplaySegment(scene, renderer, "icon.mem");
+    iconItems[Icon::AMinus]       = new DisplaySegment(scene, renderer, "icon.a-");
+    iconItems[Icon::Hold]         = new DisplaySegment(scene, renderer, "icon.hold");
+    iconItems[Icon::OneMs]        = new DisplaySegment(scene, renderer, "icon.1ms");
+    iconItems[Icon::Battery]      = new DisplaySegment(scene, renderer, "icon.battery");
+    iconItems[Icon::Apo]          = new DisplaySegment(scene, renderer, "icon.apo");
+    iconItems[Icon::Flash]        = new DisplaySegment(scene, renderer, "icon.flash");
 
-    for (auto key : iconItems.keys()) {
-        DisplaySegment *segment = iconItems[key];
-        scene->addItem(segment);
-    }
+    unitIconItems[UnitIcon::subdB]          = new DisplaySegment(scene, renderer, "unit.sub.db");
+    unitIconItems[UnitIcon::subMilli]       = new DisplaySegment(scene, renderer, "unit.sub.milli");
+    unitIconItems[UnitIcon::subA]           = new DisplaySegment(scene, renderer, "unit.sub.a");
+    unitIconItems[UnitIcon::subPercent]     = new DisplaySegment(scene, renderer, "unit.sub.percent");
+    unitIconItems[UnitIcon::subn]           = new DisplaySegment(scene, renderer, "unit.sub.nano");
+    unitIconItems[UnitIcon::subS]           = new DisplaySegment(scene, renderer, "unit.sub.s");
+    unitIconItems[UnitIcon::subOhm]         = new DisplaySegment(scene, renderer, "unit.sub.ohm");
+    unitIconItems[UnitIcon::subV]           = new DisplaySegment(scene, renderer, "unit.sub.v");
+    unitIconItems[UnitIcon::subK]           = new DisplaySegment(scene, renderer, "unit.sub.kilo");
+    unitIconItems[UnitIcon::subHz]          = new DisplaySegment(scene, renderer, "unit.sub.hz");
+    unitIconItems[UnitIcon::mainCelcius]    = new DisplaySegment(scene, renderer, "unit.main.celcius");
+    unitIconItems[UnitIcon::mainFahrenheit] = new DisplaySegment(scene, renderer, "unit.main.fahrenheit");
+    unitIconItems[UnitIcon::mainMilli]      = new DisplaySegment(scene, renderer, "unit.main.milli");
+    unitIconItems[UnitIcon::mainV]          = new DisplaySegment(scene, renderer, "unit.main.v");
+    unitIconItems[UnitIcon::mainA1]         = new DisplaySegment(scene, renderer, "unit.main.a1");
+    unitIconItems[UnitIcon::mainMicro]      = new DisplaySegment(scene, renderer, "unit.main.micro");
+    unitIconItems[UnitIcon::mainNano]       = new DisplaySegment(scene, renderer, "unit.main.nano");
+    unitIconItems[UnitIcon::mainF]          = new DisplaySegment(scene, renderer, "unit.main.f");
+    unitIconItems[UnitIcon::mainA2]         = new DisplaySegment(scene, renderer, "unit.main.a2");
+    unitIconItems[UnitIcon::mainMega]       = new DisplaySegment(scene, renderer, "unit.main.mega");
+    unitIconItems[UnitIcon::mainKilo]       = new DisplaySegment(scene, renderer, "unit.main.kilo");
+    unitIconItems[UnitIcon::mainOhm]        = new DisplaySegment(scene, renderer, "unit.main.ohm");
+    unitIconItems[UnitIcon::mainHz]         = new DisplaySegment(scene, renderer, "unit.main.hz");
 
-    unitIconItems[UnitIcon::subdB]      = new DisplaySegment(renderer, "unit.sub.db");
-    unitIconItems[UnitIcon::subMilli]       = new DisplaySegment(renderer, "unit.sub.milli");
-    unitIconItems[UnitIcon::subA]       = new DisplaySegment(renderer, "unit.sub.a");
-    unitIconItems[UnitIcon::subPercent] = new DisplaySegment(renderer, "unit.sub.percent");
-    unitIconItems[UnitIcon::subn]       = new DisplaySegment(renderer, "unit.sub.nano");
-    unitIconItems[UnitIcon::subS]       = new DisplaySegment(renderer, "unit.sub.s");
-    unitIconItems[UnitIcon::subOhm]     = new DisplaySegment(renderer, "unit.sub.ohm");
-    unitIconItems[UnitIcon::subV]       = new DisplaySegment(renderer, "unit.sub.v");
-    unitIconItems[UnitIcon::subK]       = new DisplaySegment(renderer, "unit.sub.kilo");
-    unitIconItems[UnitIcon::subHz]      = new DisplaySegment(renderer, "unit.sub.hz");
+    for (int i = 0; i < 26; i++)
+        barItems << new DisplaySegment(scene, renderer, QString::asprintf("bar.%d", i));
 
-    unitIconItems[UnitIcon::mainCelcius]    = new DisplaySegment(renderer, "unit.main.celcius");
-    unitIconItems[UnitIcon::mainFahrenheit] = new DisplaySegment(renderer, "unit.main.fahrenheit");
-    unitIconItems[UnitIcon::mainMilli]      = new DisplaySegment(renderer, "unit.main.milli");
-    unitIconItems[UnitIcon::mainV]          = new DisplaySegment(renderer, "unit.main.v");
-    unitIconItems[UnitIcon::mainA1]         = new DisplaySegment(renderer, "unit.main.a1");
-    unitIconItems[UnitIcon::mainMicro]      = new DisplaySegment(renderer, "unit.main.micro");
-    unitIconItems[UnitIcon::mainNano]       = new DisplaySegment(renderer, "unit.main.nano");
-    unitIconItems[UnitIcon::mainF]          = new DisplaySegment(renderer, "unit.main.f");
-    unitIconItems[UnitIcon::mainA2]         = new DisplaySegment(renderer, "unit.main.a2");
-    unitIconItems[UnitIcon::mainMega]       = new DisplaySegment(renderer, "unit.main.mega");
-    unitIconItems[UnitIcon::mainKilo]       = new DisplaySegment(renderer, "unit.main.kilo");
-    unitIconItems[UnitIcon::mainOhm]        = new DisplaySegment(renderer, "unit.main.ohm");
-    unitIconItems[UnitIcon::mainHz]         = new DisplaySegment(renderer, "unit.main.hz");
+    scale = new DisplaySegment(scene, renderer, "scale");
+    scale_500 = new DisplaySegment(scene, renderer, "scale.500");
+    scale_1000 = new DisplaySegment(scene, renderer, "scale.1000");
+    barNegative = new DisplaySegment(scene, renderer, "bar.negative");
+    barPositive = new DisplaySegment(scene, renderer, "bar.positive");
+}
 
-    for (auto key : unitIconItems.keys()) {
-        DisplaySegment *segment = unitIconItems[key];
-        scene->addItem(segment);
-    }
+Display::~Display()
+{
+    while (!barItems.empty())
+        delete barItems.takeFirst();
 
-    for (int i = 0; i < 26; i++) {
-        DisplaySegment *segment = new DisplaySegment(renderer, QString::asprintf("bar.%d", i));
-        barItems << segment;
-        scene->addItem(segment);
-    }
+    for (auto key : iconItems.keys())
+        delete iconItems[key];
 
-    scale = new DisplaySegment(renderer, "scale");
-    scene->addItem(scale);
+    for (auto key : unitIconItems.keys())
+        delete unitIconItems[key];
 
-    scale_500 = new DisplaySegment(renderer, "scale.500");
-    scene->addItem(scale_500);
+    delete scale;
+    delete scale_500;
+    delete scale_1000;
+    delete barNegative;
+    delete barPositive;
 
-    scale_1000 = new DisplaySegment(renderer, "scale.1000");
-    scene->addItem(scale_1000);
-
-    barNegative = new DisplaySegment(renderer, "bar.negative");
-    scene->addItem(barNegative);
-
-    barPositive = new DisplaySegment(renderer, "bar.positive");
-    scene->addItem(barPositive);
+    delete subDisplay;
+    delete mainDisplay;
+    delete renderer;
 }
 
 void Display::setMain(const QString &string, int dpPosition)
