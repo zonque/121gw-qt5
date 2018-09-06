@@ -77,8 +77,9 @@ void Multimeter::handlePacket()
 {
     Display::Icons icons = 0;
     Display::UnitIcons unitIcons = 0;
-
-    // FIXME: scaling is not implemented
+    int mainDpPosition = 0;
+    double mainScaleFactor = 1.0;
+    mainScaleFactor = 10.0;
 
     double mainValue, subValue;
 
@@ -86,14 +87,283 @@ void Multimeter::handlePacket()
     case PacketParser::Mode::ModeLowZ:
         icons |= Display::Icon::LowZ;
         unitIcons |= Display::UnitIcon::mainV;
+        mainDpPosition = 1;
+        mainScaleFactor = 10.0;
         break;
+
     case PacketParser::Mode::ModeDCmV:
     case PacketParser::Mode::ModeACmV:
         unitIcons |= Display::UnitIcon::mainMilli;
-        // fall-through
+        unitIcons |= Display::UnitIcon::mainV;
+
+        switch (parser.getMainScale()) {
+        case 0:
+            mainDpPosition = 3;
+            mainScaleFactor = 0.000001;
+            break;
+        case 1:
+            mainDpPosition = 2;
+            mainScaleFactor = 0.00001;
+            break;
+        }
+
+        break;
+
     case PacketParser::Mode::ModeDCV:
     case PacketParser::Mode::ModeACV:
         unitIcons |= Display::UnitIcon::mainV;
+
+        switch (parser.getMainScale()) {
+        case 0:
+            mainDpPosition = 4;
+            mainScaleFactor = 0.0001;
+            break;
+        case 1:
+            mainDpPosition = 3;
+            mainScaleFactor = 0.001;
+            break;
+        case 2:
+            mainDpPosition = 2;
+            mainScaleFactor = 0.01;
+            break;
+        }
+
+        break;
+
+    case PacketParser::Mode::ModeTemp:
+        mainDpPosition = 1;
+        break;
+
+    case PacketParser::Mode::ModeHz:
+        unitIcons |= Display::UnitIcon::mainHz;
+
+        switch (parser.getMainScale()) {
+        case 0:
+            mainDpPosition = 3;
+            mainScaleFactor = 0.0000001;
+            break;
+        case 1:
+            mainDpPosition = 2;
+            mainScaleFactor = 0.00000001;
+            break;
+        case 2:
+            mainDpPosition = 1;
+            mainScaleFactor = 0.000000001;
+            break;
+        }
+
+        break;
+
+    case PacketParser::Mode::ModemS:
+        unitIcons |= Display::UnitIcon::mainMilliSeconds;
+
+        switch (parser.getMainScale()) {
+        case 0:
+            mainDpPosition = 4;
+            mainScaleFactor = 0.0000001;
+            break;
+        case 1:
+            mainDpPosition = 3;
+            mainScaleFactor = 0.000001;
+            break;
+        case 2:
+            mainDpPosition = 2;
+            mainScaleFactor = 0.00001;
+            break;
+        }
+
+        break;
+
+    case PacketParser::Mode::ModeDuty:
+        unitIcons |= Display::UnitIcon::subPercent;
+        mainDpPosition = 1;
+        mainScaleFactor = 0.1;
+        break;
+
+    case PacketParser::Mode::ModeResistor:
+        unitIcons |= Display::UnitIcon::mainOhm;
+
+        switch (parser.getMainScale()) {
+        case 0:
+            mainDpPosition = 3;
+            mainScaleFactor = 0.001;
+            break;
+        case 1:
+            mainDpPosition = 2;
+            mainScaleFactor = 0.01;
+            break;
+        case 2:
+            unitIcons |= Display::UnitIcon::mainKilo;
+            mainDpPosition = 4;
+            mainScaleFactor = 0.1;
+            break;
+        case 3:
+            unitIcons |= Display::UnitIcon::mainKilo;
+            mainDpPosition = 3;
+            mainScaleFactor = 1.0;
+            break;
+        case 4:
+            unitIcons |= Display::UnitIcon::mainKilo;
+            mainDpPosition = 2;
+            mainScaleFactor = 10.0;
+            break;
+        case 5:
+            unitIcons |= Display::UnitIcon::mainMega;
+            mainDpPosition = 4;
+            mainScaleFactor = 100.0;
+            break;
+        case 6:
+            unitIcons |= Display::UnitIcon::mainMega;
+            mainDpPosition = 3;
+            mainScaleFactor = 1000.0;
+            break;
+        }
+
+        break;
+
+    case PacketParser::Mode::ModeContinuity:
+        unitIcons |= Display::UnitIcon::mainOhm;
+        icons |= Display::Icon::Beep;
+
+        mainDpPosition = 2;
+        mainScaleFactor = 0.01;
+        break;
+
+    case PacketParser::Mode::ModeDiode:
+        unitIcons |= Display::UnitIcon::mainV;
+        icons |= Display::Icon::Diode;
+
+        switch (parser.getMainScale()) {
+        case 0:
+            mainDpPosition = 4;
+            mainScaleFactor = 0.0001;
+            break;
+        case 1:
+            mainDpPosition = 3;
+            mainScaleFactor = 0.001;
+            break;
+        }
+
+        break;
+
+    case PacketParser::Mode::ModeCapacitor:
+        unitIcons |= Display::UnitIcon::mainF;
+
+        switch (parser.getMainScale()) {
+        case 0:
+            unitIcons |= Display::UnitIcon::mainNano;
+            mainDpPosition = 2;
+            mainScaleFactor = 0.00000000001;
+            break;
+        case 1:
+            // FIXME - is this right?
+            unitIcons |= Display::UnitIcon::mainNano;
+            mainDpPosition = 1;
+            mainScaleFactor = 0.000000000001;
+            break;
+        case 2:
+            unitIcons |= Display::UnitIcon::mainMicro;
+            mainDpPosition = 3;
+            mainScaleFactor = 0.000000001;
+            break;
+        case 3:
+            unitIcons |= Display::UnitIcon::mainMicro;
+            mainDpPosition = 2;
+            mainScaleFactor = 0.0000001;
+            break;
+        case 4:
+            unitIcons |= Display::UnitIcon::mainMicro;
+            mainDpPosition = 1;
+            mainScaleFactor = 0.0000001;
+            break;
+        case 5:
+            unitIcons |= Display::UnitIcon::mainMicro;
+            mainDpPosition = 0;
+            mainScaleFactor = 0.000000001;
+            break;
+        }
+
+        break;
+
+    //FIXME
+    case PacketParser::Mode::ModeACuVA:
+        break;
+
+    //FIXME
+    case PacketParser::Mode::ModeACmVA:
+        break;
+
+    //FIXME
+    case PacketParser::Mode::ModeACVA:
+        break;
+
+    case PacketParser::Mode::ModeACuA:
+    case PacketParser::Mode::ModeDCuA:
+        unitIcons |= Display::UnitIcon::mainA1;
+        unitIcons |= Display::UnitIcon::mainMicro;
+
+        switch (parser.getMainScale()) {
+        case 0:
+            mainDpPosition = 3;
+            mainScaleFactor = 0.0000001;
+            break;
+        case 1:
+            mainDpPosition = 2;
+            mainScaleFactor = 0.00000001;
+            break;
+        case 2:
+            mainDpPosition = 1;
+            mainScaleFactor = 0.000000001;
+            break;
+        }
+
+        break;
+
+    case PacketParser::Mode::ModeACmA:
+    case PacketParser::Mode::ModeDCmA:
+        unitIcons |= Display::UnitIcon::mainA1;
+        unitIcons |= Display::UnitIcon::mainMilli;
+
+        switch (parser.getMainScale()) {
+        case 0:
+            mainDpPosition = 4;
+            mainScaleFactor = 0.0000001;
+            break;
+        case 1:
+            mainDpPosition = 3;
+            mainScaleFactor = 0.000001;
+            break;
+        case 2:
+            mainDpPosition = 2;
+            mainScaleFactor = 0.00001;
+            break;
+        }
+
+        break;
+
+    case PacketParser::Mode::ModeACA:
+    case PacketParser::Mode::ModeDCA:
+        unitIcons |= Display::UnitIcon::mainA1;
+
+        switch (parser.getMainScale()) {
+        // FIXME - there are possibly more range modes here
+        case 1:
+            mainDpPosition = 4;
+            mainScaleFactor = 0.0001;
+            break;
+        }
+
+        break;
+
+    case PacketParser::Mode::ModeDCuVA:
+        break;
+
+    case PacketParser::Mode::ModeDCmVA:
+        break;
+
+    case PacketParser::Mode::ModeDCVA:
+        break;
+
     default:
         break;
     }
@@ -114,11 +384,16 @@ void Multimeter::handlePacket()
         ui->display->setMain("OFL ", 3);
         mainValue = qInf();
     } else {
-        ui->display->setMain(QString::asprintf("%05d", parser.getMainValue()), 0);
-        mainValue = parser.getMainValue();
+        QString mainValueString= QString::number(parser.getMainValue());
+
+        while (mainDpPosition > mainValueString.length() - 1)
+            mainValueString.prepend("0");
+
+        ui->display->setMain(mainValueString, mainDpPosition);
+        mainValue = (double) parser.getMainValue() * mainScaleFactor;
     }
 
-    ui->display->setSub(QString::asprintf("%05d", parser.getSubValue()), 0);
+    ui->display->setSub(QString::number(parser.getSubValue()), 0);
     subValue = parser.getSubValue();
 
     valueModel.addValue(MultimeterValue(QTime::currentTime(), mainValue, subValue));
@@ -212,8 +487,6 @@ void Multimeter::handlePacket()
         ui->display->setBarValue(parser.getBarValue(), parser.getBarFlags() & PacketParser::BarFlag::BarNegative);
     } else
         ui->display->setBarStatus(Display::BarStatus::Off);
-
-    qInfo() << __func__ << icons;
 
     ui->display->setIcons(icons);
     ui->display->setUnitIcons(unitIcons);

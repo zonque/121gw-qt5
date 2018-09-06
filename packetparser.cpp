@@ -46,6 +46,9 @@ bool PacketParser::parseV2(const QByteArray &data)
 
     mainValue = qFromBigEndian(packet->mainValue) | ((packet->mainMode >> 6) << 16);
     mainRangeFlags = (MainRangeFlags) (packet->mainRange >> 4);
+    mainScale = packet->mainRange & 0xf;
+
+    qInfo() << QString::asprintf("mainRange: %02x", packet->mainRange & 0xf) << "value" << mainValue;
 
     subValue = qFromBigEndian(packet->subValue);
 

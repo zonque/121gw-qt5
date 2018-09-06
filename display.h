@@ -109,6 +109,7 @@ public:
         mainKilo          = 1 << 20,
         mainOhm           = 1 << 21,
         mainHz            = 1 << 22,
+        mainMilliSeconds  = 1 << 23,
     };
     Q_DECLARE_FLAGS(UnitIcons, UnitIcon);
 

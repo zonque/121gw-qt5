@@ -105,6 +105,7 @@ public:
 
     Mode getMainMode() { return mainMode; }
     uint32_t getMainValue() { return mainValue; }
+    uint32_t getMainScale() { return mainScale; }
     MainRangeFlags getMainRangeFlags() { return mainRangeFlags; }
 
     Mode getSubMode() { return subMode; }
@@ -128,6 +129,7 @@ private:
     uint8_t barValue;
 
     uint32_t mainValue;
+    uint32_t mainScale;
     MainRangeFlags mainRangeFlags;
 
     uint16_t subValue;
