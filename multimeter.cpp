@@ -16,7 +16,7 @@ Multimeter::Multimeter(const QBluetoothDeviceInfo &device, QWidget *parent) :
 
     QLowEnergyController *c = new QLowEnergyController(device, this);
 
-    QObject::connect(c,&QLowEnergyController::connected, [this, c]() {
+    QObject::connect(c,&QLowEnergyController::connected, [c]() {
         c->discoverServices();
     });
 
@@ -32,7 +32,7 @@ Multimeter::Multimeter(const QBluetoothDeviceInfo &device, QWidget *parent) :
                 handlePacket();
         });
 
-        QObject::connect(s, &QLowEnergyService::stateChanged, [this, s](QLowEnergyService::ServiceState newState) {
+        QObject::connect(s, &QLowEnergyService::stateChanged, [s](QLowEnergyService::ServiceState newState) {
             if (newState == QLowEnergyService::ServiceDiscovered) {
                 foreach (const QLowEnergyCharacteristic characteristic, s->characteristics()) {
                     // Look for the ClientCharacteristicConfiguration descriptor in all characteristics, and
@@ -61,7 +61,7 @@ Multimeter::Multimeter(const QBluetoothDeviceInfo &device, QWidget *parent) :
 
     QObject::connect(ui->historySaveButton, &QPushButton::clicked, [this]() {
         QString fileName = QFileDialog::getSaveFileName(this,
-            "Save values as CSV", NULL, "CSV (*.csv *.txt)");
+            "Save values as CSV", nullptr, "CSV (*.csv *.txt)");
         // ...
     });
 
@@ -75,8 +75,8 @@ Multimeter::~Multimeter()
 
 void Multimeter::handlePacket()
 {
-    Display::Icons icons = 0;
-    Display::UnitIcons unitIcons = 0;
+    Display::Icons icons;
+    Display::UnitIcons unitIcons;
     int mainDpPosition = 0;
     double mainScaleFactor = 1.0;
     mainScaleFactor = 10.0;
